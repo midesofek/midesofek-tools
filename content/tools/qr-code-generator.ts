@@ -32,17 +32,13 @@ export const qrCodeContent: ToolContent = {
   about: {
     heading: "About this tool",
     paragraphs: [
-      // YOU FILL THESE IN — see Step 5.3
-      "This is a Free QR Code Generator built to cater for everything you need as a builder. Whether you need to share  a WiFi Connection, your socials/contact to your audience, or receive crypto payments, this tool has got you covered. It’s 100% private and runs entirely in your browser.",
-      "Unlike most QR Code Generators, that spams you with ads and a paywall, this tool is ad free, open-source and is 100% free to use.",
-      "The QR code is Generated on your device, never sent to any server or database and the logo you upload never leaves your browser",
-      "It is built for builders who need to share WiFi at an event, want to share their socials/contact info in a sleek way, or receive Bitcoin, Ethereum or Solana payments without the hassle of setting up a whole page for it.",
-      "The supported types cover what you use the most as a builder.",
-      "This tool is Open-Source on GitHub, built with Next.js, React and the `qr-code-styling` library",
+      "A free QR code generator built for the things builders actually do — sharing a WiFi password at a meetup, putting a crypto wallet on a sticker, or linking a GitHub profile from a printed business card.",
+      "Most QR generators online wrap the same API and serve it back with ads, watermarks, and a paywall when you want a clean SVG. This one doesn't. The QR is generated on your device, the logo you upload never leaves your browser, and every export is free.",
+      "10 supported types cover what's actually useful: URL, text, WiFi, phone, Bitcoin, Ethereum, Solana, Twitter, GitHub, and YouTube.",
+      "Open source on GitHub. Built with Next.js, React, and the `qr-code-styling` library.",
     ],
   },
   features: [
-    // YOU FILL THESE IN — see Step 5.4
     {
       title: "Supports 10 QR types",
       description:
@@ -81,7 +77,6 @@ export const qrCodeContent: ToolContent = {
     },
   ],
   useCases: [
-    // YOU FILL THESE IN — see Step 5.5
     {
       title: "Share WiFi without typing the password",
       description:
@@ -98,9 +93,9 @@ export const qrCodeContent: ToolContent = {
         "Most people throw away cards. They keep what's interesting. A QR linking to your GitHub or Twitter is more interesting than a phone number.",
     },
     {
-      title: "Link a video tutorial from a physical product",
+      title: "Tip jar for streamers and creators",
       description:
-        "Print a QR on the side of packaging that goes to a YouTube unboxing or how-to video. Skip the printed manual nobody reads.",
+        "Drop a Solana or Bitcoin QR on your stream overlay or in your video description. Viewers scan, send a tip, no Stripe account, no platform fees.",
     },
     {
       title: "Quick contact for events and conferences",
@@ -109,7 +104,6 @@ export const qrCodeContent: ToolContent = {
     },
   ],
   faqs: [
-    // YOU FILL THESE IN — see Step 5.6
     {
       question: "Is this QR code generator really free?",
       answer:
@@ -138,7 +132,7 @@ export const qrCodeContent: ToolContent = {
     {
       question: "Are my QR codes saved or tracked?",
       answer:
-        "No. Everything you generate happens in your browser. The tool doesn't store your inputs, your logos, or your QR codes. There's no analytics on what you generate — only basic site analytics (page views, no personal data).",
+        "No. There's no tracking on what you generate. The tool runs entirely in your browser",
     },
     {
       question: "How does a WiFi QR code actually work?",
@@ -154,11 +148,11 @@ export const qrCodeContent: ToolContent = {
   history: {
     heading: "How QR codes were born",
     paragraphs: [
-      // YOU FILL THESE IN — see Step 5.7
-      "The widely used QR code idea came from a fun simple Japanese board game known as 'Go'",
-      "It was invented by Masahiro Hara, a frustrated Engineer working for Denso Wave in 1994. Tired of tracking inventory with traditional barcodes which couldn't store more than 12 digits numerical data (0-9), Masahiro Hara sought a way to encode more information that could be read quickly.",
-      "During one of his launch breaks, Hara was playing Go (a board game that uses a 2D grid of black and white stones) and it sparked an idea. He realized that by using a 2D grid of black and white squares, he could encode much more data than a traditional barcode, which could be scanned from any angle at high speed.",
-      "The part that stuck with me is the fact that the 'complex' QR code was inspired by a SIMPLE game",
+      "The QR code wasn't invented by a tech company or a research lab. It came from an engineer's lunch break and a 2,500 year-old Japanese board game.",
+      "In 1994, Masahiro Hara was working at Denso Wave, a Toyota subsidiary, on the frustrating problem of tracking car parts across a factory. The barcodes they used then could only hold 12 digits, not enough to identify the parts moving through the line, and slow to scan because they had to be aligned just right.",
+      "Hara was playing Go on his lunch break when he noticed something. The game's board is a grid, pieces are placed at intersections; the patterns of black and white stones form unique configurations that a player can read at a glance, from any angle. What if data could be encoded the same way? Not a line of stripes, but a 2D matrix that could hold thousands of characters and be scanned even when rotated, partially blocked, or printed on a curved surface.",
+      "That insight became the QR code: position-detection patterns in three corners (so scanners know which way is up), error correction baked in (so the code still works when smudged or covered by a logo), and capacity for over 4,000 alphanumeric characters in a single square.",
+      "What stuck with me when I read this: the 'complex' technology behind QR codes — the thing now used for restaurant menus, payments, and the Bitcoin sticker you might be making with this tool — came from someone playing a game on his break. The best ideas often look like that.",
     ],
   },
 };
