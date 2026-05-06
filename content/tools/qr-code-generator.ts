@@ -132,7 +132,7 @@ export const qrCodeContent: ToolContent = {
     {
       question: "Are my QR codes saved or tracked?",
       answer:
-        "No. There's no tracking on what you generate. The tool runs entirely in your browser",
+        "No. Everything you generate happens in your browser. Your inputs, your logos, your QR codes never leave your device. The site uses Vercel Analytics for basic page-view counts (no cookies, no personal data, GDPR-friendly), but what you generate inside the tool is never sent anywhere.",
     },
     {
       question: "How does a WiFi QR code actually work?",
