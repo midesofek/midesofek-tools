@@ -11,6 +11,30 @@ export function ToolPageLayout({ tool, children }: ToolPageLayoutProps) {
 
   return (
     <main className="min-h-screen">
+      {/* JSON-LD structured data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "SoftwareApplication",
+            name: tool.name,
+            description: tool.metaDescription,
+            applicationCategory: "UtilitiesApplication",
+            operatingSystem: "Web",
+            offers: {
+              "@type": "Offer",
+              price: "0",
+              priceCurrency: "USD",
+            },
+            author: {
+              "@type": "Person",
+              name: "Mide Sofek",
+              url: "https://midesofek.com",
+            },
+          }),
+        }}
+      />
       {/* Hero */}
       <section className="px-6 py-12 max-w-5xl mx-auto">
         <nav className="text-sm text-gray-500 mb-4">

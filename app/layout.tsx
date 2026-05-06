@@ -1,36 +1,53 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Nav } from "@/components/layout/Nav";
 import { Footer } from "@/components/layout/Footer";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+const SITE_URL = "https://midesofek-tools.vercel.app";
 
 export const metadata: Metadata = {
-  title: "MideSofek-Tools — Free open-source tools for builders",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: "MideSofek-tools — Free, open-source tools for builders",
+    template: "%s | MideSofek-tools",
+  },
   description:
-    "Free, open-source utility tools. No signup, no tracking, runs in your browser.",
+    "Free, open-source utility tools. No signup, no tracking, runs in your browser. Built by @midesofek.",
+  keywords: [
+    "free tools",
+    "open source tools",
+    "developer tools",
+    "qr code generator",
+  ],
+  authors: [{ name: "Mide Sofek", url: "https://midesofek.com" }],
+  creator: "Mide Sofek",
+  alternates: {
+    canonical: SITE_URL,
+  },
+  openGraph: {
+    type: "website",
+    siteName: "MideSofek-tools",
+    url: SITE_URL,
+    title: "MideSofek-tools — Free, open-source tools for builders",
+    description:
+      "Free, open-source utility tools. No signup, no tracking, runs in your browser.",
+    images: [{ url: `${SITE_URL}/og/default.png`, width: 1200, height: 630 }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    creator: "@midesofek",
+    site: "@midesofek",
+  },
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
-    <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
-      <body className="min-h-full flex flex-col">
+    <html lang="en">
+      <body>
         <Nav />
         {children}
         <Footer />
