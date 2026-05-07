@@ -1,0 +1,24 @@
+name: Feature request
+description: Suggest a new tool or an improvement to an existing one
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: use-case
+    attributes:
+      label: What's the use case?
+      description: What are you trying to do? Why does the current set of tools not solve it?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: What should it do?
+      description: Describe the feature or new tool. Mockups welcome.
+  - type: dropdown
+    id: type
+    attributes:
+      label: Type
+      options:
+        - New tool
+        - Improvement to existing tool
+        - Site-wide feature (homepage, nav, etc.)
