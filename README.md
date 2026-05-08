@@ -6,7 +6,7 @@
 [![CI](https://github.com/midesofek/midesofek-tools/actions/workflows/ci.yml/badge.svg)](https://github.com/midesofek/midesofek-tools/actions/workflows/ci.yml)
 [![Built with Next.js](https://img.shields.io/badge/Built%20with-Next.js-black)](https://nextjs.org/)
 
-**Live at [midesofek-tools.vercel.app](https://midesofek-tools.vercel.app)**
+**Live at [tools.midesofek.com](https://tools.midesofek.com)**
 
 ![QR Code Generator Demo](./docs/demo.gif)
 
@@ -20,13 +20,13 @@ This is a single Next.js app — each tool lives at its own route (e.g. `/qr-cod
 
 ## Tools
 
-|     | Tool                                                                      | Status         |
-| --- | ------------------------------------------------------------------------- | -------------- |
-| 🔗  | [QR Code Generator](https://midesofek-tools.vercel.app/qr-code-generator) | ✅ Live        |
-| ⛽  | Gas Fee Tracker                                                           | 🚧 Coming soon |
-| 🔗  | URL Shortener                                                             | 🚧 Coming soon |
-| 🧾  | Onchain Receipt Generator                                                 | 🚧 Coming soon |
-| 🐳  | Solana Token Bundlers                                                     | 🚧 Coming soon |
+|     | Tool                                                               | Status         |
+| --- | ------------------------------------------------------------------ | -------------- |
+| 🔗  | [QR Code Generator](https://tools.midesofek.com/qr-code-generator) | ✅ Live        |
+| ⛽  | Gas Fee Tracker                                                    | 🚧 Coming soon |
+| 🔗  | URL Shortener                                                      | 🚧 Coming soon |
+| 🧾  | Onchain Receipt Generator                                          | 🚧 Coming soon |
+| 🐳  | Solana Token Bundlers                                              | 🚧 Coming soon |
 
 ## Tech stack
 

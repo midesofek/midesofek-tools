@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 import { tools } from "@/lib/tools";
 
-const SITE_URL = "https://midesofek-tools.vercel.app";
+const SITE_URL = "https://tools.midesofek.com";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();

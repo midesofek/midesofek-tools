@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { getTool } from "./tools";
 
-const SITE_URL = "https://midesofek-tools.vercel.app"; //will later be tools.midesofek.com whn I secure the subdomain
+const SITE_URL = "https://tools.midesofek.com"; //will later be tools.midesofek.com whn I secure the subdomain
 const SITE_NAME = "midesofek-tools";
 
 export function generateToolMetadata(slug: string): Metadata {

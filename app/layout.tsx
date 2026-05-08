@@ -5,7 +5,7 @@ import "./globals.css";
 import { Nav } from "@/components/layout/Nav";
 import { Footer } from "@/components/layout/Footer";
 
-const SITE_URL = "https://midesofek-tools.vercel.app";
+const SITE_URL = "https://tools.midesofek.com";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
