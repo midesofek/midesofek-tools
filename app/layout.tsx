@@ -33,7 +33,7 @@ export const metadata: Metadata = {
     title: "MideSofek-tools — Free, open-source tools for builders",
     description:
       "Free, open-source utility tools. No signup, no tracking, runs in your browser.",
-    images: [{ url: `${SITE_URL}/og/default.png`, width: 1200, height: 630 }],
+    images: [{ url: `${SITE_URL}/opengraph-image`, width: 1200, height: 630 }],
   },
   twitter: {
     card: "summary_large_image",
