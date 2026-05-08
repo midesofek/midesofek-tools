@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { getTool } from "./tools";
 
-const SITE_URL = "https://tools.midesofek.com"; //will later be tools.midesofek.com whn I secure the subdomain
+const SITE_URL = "https://tools.midesofek.com";
 const SITE_NAME = "midesofek-tools";
 
 export function generateToolMetadata(slug: string): Metadata {
@@ -26,7 +26,7 @@ export function generateToolMetadata(slug: string): Metadata {
       type: "website",
       images: [
         {
-          url: `${SITE_URL}/og/${tool.slug}.png`,
+          url: `${SITE_URL}/${tool.slug}/opengraph-image`,
           width: 1200,
           height: 630,
           alt: tool.name,
