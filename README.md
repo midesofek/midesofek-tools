@@ -3,6 +3,7 @@
 **Free, open-source utility tools for builders, traders, and creators.**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![CI](https://github.com/midesofek/midesofek-tools/actions/workflows/ci.yml/badge.svg)](https://github.com/midesofek/midesofek-tools/actions/workflows/ci.yml)
 [![Built with Next.js](https://img.shields.io/badge/Built%20with-Next.js-black)](https://nextjs.org/)
 
 **Live at [midesofek-tools.vercel.app](https://midesofek-tools.vercel.app)**
