@@ -58,7 +58,7 @@ export const tools: Tool[] = [
     ],
     icon: "🧾",
     category: "utility",
-    status: "coming-soon",
+    status: "live",
   },
 ];
 
