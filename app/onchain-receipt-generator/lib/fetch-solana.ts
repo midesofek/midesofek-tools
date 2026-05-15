@@ -27,7 +27,6 @@ type HeliusEnhancedTransaction = {
 };
 
 const LAMPORTS_PER_SOL = 1_000_000_000;
-console.log(process.env.HELIUS_API_KEY);
 
 export async function fetchSolanaReceipt(
   signature: string,
