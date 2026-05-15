@@ -68,7 +68,6 @@ export async function GET(req: NextRequest) {
 
     // Enrich with USD prices — non-fatal if it fails
     const enriched = await enrichReceiptWithPrices(result.receipt);
-    console.log("ENRICHED:", enriched);
 
     // Cache successful receipts aggressively — past transactions are immutable
     return NextResponse.json(
