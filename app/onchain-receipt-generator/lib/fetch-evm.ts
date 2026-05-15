@@ -48,7 +48,7 @@ function getClient(chain: Chain) {
  */
 const tokenMetaCache = new Map<string, { symbol: string; decimals: number }>();
 async function getTokenMeta(
-  client,
+  client: ReturnType<typeof getClient>,
   address: `0x${string}`,
 ): Promise<{ symbol: string; decimals: number }> {
   const cacheKey = `${client.chain?.id}-${address.toLowerCase()}`;
