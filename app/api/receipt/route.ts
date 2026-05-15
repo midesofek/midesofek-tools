@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { fetchReceipt } from "@/app/onchain-receipt-generator/lib/fetch-receipt";
+import { enrichReceiptWithPrices } from "@/app/onchain-receipt-generator/lib/fetch-prices";
 
 // Simple in-memory rate limiter (resets on server restart).
 // For production scale, replace with Upstash Redis or Vercel KV.
@@ -65,13 +66,21 @@ export async function GET(req: NextRequest) {
       });
     }
 
+    // Enrich with USD prices — non-fatal if it fails
+    const enriched = await enrichReceiptWithPrices(result.receipt);
+    console.log("ENRICHED:", enriched);
+
     // Cache successful receipts aggressively — past transactions are immutable
-    return NextResponse.json(result, {
-      headers: {
-        "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=86400",
-        "X-RateLimit-Remaining": rateLimit.remaining.toString(),
+    return NextResponse.json(
+      { ok: true, receipt: enriched },
+      {
+        headers: {
+          "Cache-Control":
+            "public, s-maxage=3600, stale-while-revalidate=86400",
+          "X-RateLimit-Remaining": rateLimit.remaining.toString(),
+        },
       },
-    });
+    );
   } catch (err) {
     console.error("Unexpected error in /api/receipt:", err);
     return NextResponse.json(
