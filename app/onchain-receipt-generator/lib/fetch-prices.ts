@@ -2,15 +2,24 @@ import type { Receipt, Chain } from "../types";
 import { CHAINS } from "../types";
 
 const COINGECKO_BASE = "https://api.coingecko.com/api/v3";
+const GECKOTERMINAL_BASE = "https://api.geckoterminal.com/api/v2";
 
-// Per-process cache. Key: `${platform}-${address-or-id}-${date}`. Value: USD price.
-// Past prices are immutable, so cache lifetime = process lifetime is fine.
+// Per-process cache. Past prices are immutable, so process-lifetime is fine.
 const priceCache = new Map<string, number | null>();
 
+// CoinGecko's platform IDs for our supported chains.
 const COINGECKO_PLATFORM: Record<Chain, string> = {
   ethereum: "ethereum",
   base: "base",
   bsc: "binance-smart-chain",
+  solana: "solana",
+};
+
+// GeckoTerminal's network IDs
+const GECKOTERMINAL_NETWORK: Record<Chain, string> = {
+  ethereum: "eth",
+  base: "base",
+  bsc: "bsc",
   solana: "solana",
 };
 
@@ -25,8 +34,8 @@ function formatCgDate(date: Date): string {
 }
 
 /**
- * Fetch the USD price of a native coin (ETH, BNB, SOL) on a specific date.
- * Returns null on any failure — caller should treat absence of price as non-fatal.
+ * Native coin historical price via CoinGecko (ETH, BNB, SOL).
+ * These are always listed on CoinGecko — no fallback needed.
  */
 async function fetchNativePrice(
   coinId: string,
@@ -56,8 +65,90 @@ async function fetchNativePrice(
 }
 
 /**
- * Fetch the USD price of an ERC-20 / SPL token by contract address on a specific date.
+ * Try CoinGecko's contract → price lookup. Works for listed tokens (USDC, USDT,
+ * established projects). Returns null for unlisted / DEX-only tokens.
+ */
+async function fetchTokenPriceCoinGecko(
+  chain: Chain,
+  tokenAddress: string,
+  date: Date,
+): Promise<number | null> {
+  try {
+    const platform = COINGECKO_PLATFORM[chain];
+    const lookupUrl = `${COINGECKO_BASE}/coins/${platform}/contract/${tokenAddress.toLowerCase()}`;
+    const lookupResp = await fetch(lookupUrl);
+    if (!lookupResp.ok) return null;
+
+    const lookupData = await lookupResp.json();
+    const coinId = lookupData?.id;
+    if (!coinId) return null;
+
+    return await fetchNativePrice(coinId, date);
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Try GeckoTerminal's DEX-data fallback for tokens not listed on CoinGecko.
+ * Two-step lookup: find top pool, then fetch that pool's OHLCV for the tx date.
  * Returns null on any failure.
+ */
+async function fetchTokenPriceGeckoTerminal(
+  chain: Chain,
+  tokenAddress: string,
+  date: Date,
+): Promise<number | null> {
+  try {
+    const network = GECKOTERMINAL_NETWORK[chain];
+
+    // Step 1: find top pool for this token (sorted by liquidity by default)
+    const poolsUrl = `${GECKOTERMINAL_BASE}/networks/${network}/tokens/${tokenAddress}/pools?page=1`;
+    const poolsResp = await fetch(poolsUrl, {
+      headers: { accept: "application/json;version=20230302" },
+    });
+    if (!poolsResp.ok) return null;
+
+    const poolsData = await poolsResp.json();
+    const topPool = poolsData?.data?.[0];
+    if (!topPool) return null;
+
+    const poolAddress = topPool.attributes?.address;
+    if (!poolAddress) return null;
+
+    // Step 2: fetch daily OHLCV for that pool, anchored to the tx timestamp.
+    // before_timestamp returns candles ending at or before that unix time.
+    // We add 1 day to ensure the candle covering our tx date is included.
+    const beforeTs = Math.floor(date.getTime() / 1000) + 86400;
+    const ohlcvUrl =
+      `${GECKOTERMINAL_BASE}/networks/${network}/pools/${poolAddress}/ohlcv/day` +
+      `?aggregate=1&before_timestamp=${beforeTs}&limit=2&currency=usd&token=base`;
+
+    const ohlcvResp = await fetch(ohlcvUrl, {
+      headers: { accept: "application/json;version=20230302" },
+    });
+    if (!ohlcvResp.ok) return null;
+
+    const ohlcvData = await ohlcvResp.json();
+    const candles: number[][] = ohlcvData?.data?.attributes?.ohlcv_list ?? [];
+    if (candles.length === 0) return null;
+
+    // Pick the candle whose date matches the tx date (UTC day).
+    // ohlcv format: [timestamp_seconds, open, high, low, close, volume]
+    const txDay = Math.floor(date.getTime() / 1000 / 86400);
+    const matching = candles.find((c) => Math.floor(c[0]! / 86400) === txDay);
+    const candle = matching ?? candles[0]; // fall back to nearest available
+    if (!candle) return null;
+
+    return candle[4]!; // close price (USD)
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Fetch the USD price of an ERC-20 / SPL token at a specific date.
+ * Tries CoinGecko first (listed tokens), falls back to GeckoTerminal (DEX-only tokens).
  */
 async function fetchTokenPrice(
   chain: Chain,
@@ -65,38 +156,23 @@ async function fetchTokenPrice(
   date: Date,
 ): Promise<number | null> {
   const dateStr = formatCgDate(date);
-  const platform = COINGECKO_PLATFORM[chain];
-  const cacheKey = `token-${platform}-${tokenAddress.toLowerCase()}-${dateStr}`;
+  const cacheKey = `token-${chain}-${tokenAddress.toLowerCase()}-${dateStr}`;
   if (priceCache.has(cacheKey)) return priceCache.get(cacheKey)!;
 
-  try {
-    // Step 1: resolve contract address → coin ID
-    const lookupUrl = `${COINGECKO_BASE}/coins/${platform}/contract/${tokenAddress.toLowerCase()}`;
-    const lookupResp = await fetch(lookupUrl);
-    if (!lookupResp.ok) {
-      priceCache.set(cacheKey, null);
-      return null;
-    }
-    const lookupData = await lookupResp.json();
-    const coinId = lookupData?.id;
-    if (!coinId) {
-      priceCache.set(cacheKey, null);
-      return null;
-    }
+  // Try CoinGecko first (better data quality for listed tokens)
+  let price = await fetchTokenPriceCoinGecko(chain, tokenAddress, date);
 
-    // Step 2: fetch historical price by ID
-    const price = await fetchNativePrice(coinId, date);
-    priceCache.set(cacheKey, price);
-    return price;
-  } catch {
-    priceCache.set(cacheKey, null);
-    return null;
+  // Fall back to GeckoTerminal for DEX-only tokens
+  if (price === null) {
+    price = await fetchTokenPriceGeckoTerminal(chain, tokenAddress, date);
   }
+
+  priceCache.set(cacheKey, price);
+  return price;
 }
 
 /**
- * Enrich a Receipt with USD values for native value, fee, and all token transfers.
- * Failures are non-fatal — fields stay undefined, receipt is still valid.
+ * Enrich a Receipt with USD values. Failures are non-fatal.
  */
 export async function enrichReceiptWithPrices(
   receipt: Receipt,
@@ -104,10 +180,8 @@ export async function enrichReceiptWithPrices(
   const chainInfo = CHAINS[receipt.chain];
   const date = receipt.timestamp;
 
-  // Native price (used for both value and fee)
   const nativePrice = await fetchNativePrice(chainInfo.coingeckoId, date);
 
-  // Token prices in parallel
   const tokenPrices = await Promise.all(
     receipt.tokenTransfers.map((t) =>
       fetchTokenPrice(receipt.chain, t.tokenAddress, date),
