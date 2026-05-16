@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTransition } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Receipt } from "./Receipt";
@@ -67,6 +68,26 @@ export function ReceiptForm() {
     setInput("");
     setState({ status: "idle" });
     router.replace("?", { scroll: false });
+  }
+
+  const [isExporting, startExport] = useTransition();
+
+  async function downloadPDF() {
+    if (state.status !== "success") return;
+    startExport(async () => {
+      // Lazy-load the PDF renderer — only ship ~200KB when actually exporting
+      const { pdf } = await import("@react-pdf/renderer");
+      const { ReceiptPDF } = await import("./ReceiptPDF");
+      const blob = await pdf(<ReceiptPDF receipt={state.receipt} />).toBlob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `receipt-${state.receipt.hash.slice(0, 10)}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    });
   }
 
   return (
@@ -155,7 +176,21 @@ export function ReceiptForm() {
         {state.status === "idle" && <EmptyState />}
         {state.status === "loading" && <LoadingState />}
         {state.status === "error" && <ErrorState message={state.message} />}
-        {state.status === "success" && <Receipt receipt={state.receipt} />}
+        {state.status === "success" && (
+          <div className="space-y-4">
+            <Receipt receipt={state.receipt} />
+            <div className="flex gap-2 justify-end">
+              <button
+                type="button"
+                onClick={downloadPDF}
+                disabled={isExporting}
+                className="px-4 py-2 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 rounded-md text-sm font-medium hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity"
+              >
+                {isExporting ? "Generating PDF..." : "Download PDF"}
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
