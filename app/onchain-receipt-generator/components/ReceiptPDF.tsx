@@ -263,8 +263,8 @@ export function ReceiptPDF({ receipt }: { receipt: Receipt }) {
         )}
 
         <DetailRow label="Network fee">
-          <View style={styles.detailValueRight}>
-            <Text style={styles.detailValue}>
+          <View style={{ flexDirection: "column", alignItems: "flex-end" }}>
+            <Text style={{ fontSize: 10, color: "#0a0a0a" }}>
               {formatAmount(receipt.fee.amount)} {receipt.fee.symbol}
             </Text>
             {receipt.fee.usdValue !== undefined && (
@@ -293,8 +293,12 @@ export function ReceiptPDF({ receipt }: { receipt: Receipt }) {
 
         {/* Footer */}
         <View style={styles.footer} fixed>
-          <Text>tools.midesofek.com</Text>
-          <Text>{receipt.explorerUrl}</Text>
+          <Text>Generated at tools.midesofek.com</Text>
+          <Text
+            render={({ pageNumber, totalPages }) =>
+              `${pageNumber} / ${totalPages}`
+            }
+          />
         </View>
       </Page>
     </Document>
