@@ -1,9 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { fetchReceipt } from "@/app/onchain-receipt-generator/lib/fetch-receipt";
 import { enrichReceiptWithPrices } from "@/app/onchain-receipt-generator/lib/fetch-prices";
+import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
 
 // Simple in-memory rate limiter (resets on server restart).
 // For production scale, replace with Upstash Redis or Vercel KV.
+const MAX_IMAGES_PER_MINUTE = 20;
+/**
 const RATE_LIMIT_WINDOW_MS = 60_000; // 1 minute window
 const RATE_LIMIT_MAX = 30; // 30 receipts per minute per IP
 const rateLimitStore = new Map<string, { count: number; resetAt: number }>();
@@ -31,6 +34,7 @@ function getClientIp(req: NextRequest): string {
   if (forwarded) return forwarded.split(",")[0]!.trim();
   return req.headers.get("x-real-ip") || "unknown";
 }
+   */
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
@@ -45,10 +49,10 @@ export async function GET(req: NextRequest) {
 
   // Rate limit by IP
   const ip = getClientIp(req);
-  const rateLimit = checkRateLimit(ip);
+  const rateLimit = checkRateLimit(ip, MAX_IMAGES_PER_MINUTE);
   if (!rateLimit.ok) {
     return NextResponse.json(
-      { ok: false, error: "Rate limit exceeded. Try again in a minute." },
+      { ok: false, error: "Rate limit exceeded" },
       { status: 429, headers: { "Retry-After": "60" } },
     );
   }

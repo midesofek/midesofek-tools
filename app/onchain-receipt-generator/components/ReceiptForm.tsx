@@ -90,6 +90,18 @@ export function ReceiptForm() {
     });
   }
 
+  function downloadImage() {
+    if (state.status !== "success") return;
+    const url = `/api/receipt-image?hash=${encodeURIComponent(state.receipt.hash)}`;
+    // Trigger download via temporary anchor with `download` attribute
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `receipt-${state.receipt.hash.slice(0, 10)}.png`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  }
+
   return (
     <div className="grid lg:grid-cols-2 gap-12 py-8">
       {/* Left: input */}
@@ -179,7 +191,14 @@ export function ReceiptForm() {
         {state.status === "success" && (
           <div className="space-y-4">
             <Receipt receipt={state.receipt} />
-            <div className="flex gap-2 justify-end">
+            <div className="flex gap-2 justify-end flex-wrap">
+              <button
+                type="button"
+                onClick={downloadImage}
+                className="px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-900"
+              >
+                Download image
+              </button>
               <button
                 type="button"
                 onClick={downloadPDF}
