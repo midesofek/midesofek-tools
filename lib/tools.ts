@@ -41,7 +41,7 @@ export const tools: Tool[] = [
     slug: "onchain-receipt-generator",
     name: "Onchain Receipt Generator",
     shortDescription:
-      "Turn any blockchain transaction into a clean PDF receipt or shareable image. ETH, Base, BSC, and Solana.",
+      "Turn any blockchain transaction into a clean PDF receipt or shareable image. Supports Ethereum, Base, BSC, and Solana.",
     metaDescription:
       "Free onchain receipt generator. Paste any transaction hash from Ethereum, Base, BSC, or Solana — get a clean PDF receipt for accounting, or a shareable image for sharing. USD values, gas costs, recipient/sender, all included. No signup, runs in your browser.",
     keywords: [
@@ -57,7 +57,7 @@ export const tools: Tool[] = [
       "share crypto transaction",
     ],
     icon: "🧾",
-    category: "utility",
+    category: "crypto",
     status: "live",
   },
 ];
