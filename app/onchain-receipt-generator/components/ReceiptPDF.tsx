@@ -223,21 +223,63 @@ export function ReceiptPDF({ receipt }: { receipt: Receipt }) {
             <>
               <Text style={styles.amountLabel}>Token transfers</Text>
               <View style={styles.transferList}>
-                {receipt.tokenTransfers.map((t, i) => (
-                  <View key={i} style={styles.transferRow}>
-                    <View
-                      style={{ flexDirection: "row", alignItems: "baseline" }}
-                    >
-                      <Text style={styles.transferAmount}>
-                        {formatAmount(t.amount)}
+                {(receipt.groupedTransfers ?? []).map((g, i) => {
+                  // Show individually if 3 or fewer; show aggregate if more
+                  if (g.transfers.length <= 3) {
+                    return g.transfers.map((t, j) => (
+                      <View key={`${i}-${j}`} style={styles.transferRow}>
+                        <View
+                          style={{
+                            flexDirection: "row",
+                            alignItems: "baseline",
+                          }}
+                        >
+                          <Text style={styles.transferAmount}>
+                            {formatAmount(t.amount)}
+                          </Text>
+                          <Text style={styles.transferSymbol}>{t.symbol}</Text>
+                        </View>
+                        <Text style={styles.amountUsd}>
+                          {formatUsd(t.usdValue)}
+                        </Text>
+                      </View>
+                    ));
+                  }
+
+                  const directionLabel =
+                    g.direction === "one-to-many"
+                      ? `to ${g.recipientCount} recipients`
+                      : g.direction === "many-to-one"
+                        ? `from ${g.senderCount} senders`
+                        : `across ${g.transfers.length} transfers`;
+
+                  return (
+                    <View key={i} style={styles.transferRow}>
+                      <View
+                        style={{ flexDirection: "row", alignItems: "baseline" }}
+                      >
+                        <Text style={styles.transferAmount}>
+                          {formatAmount(g.totalAmount)}
+                        </Text>
+                        <Text style={styles.transferSymbol}>
+                          {g.token.symbol}
+                        </Text>
+                        <Text
+                          style={{
+                            fontSize: 9,
+                            color: "#9ca3af",
+                            marginLeft: 6,
+                          }}
+                        >
+                          {directionLabel}
+                        </Text>
+                      </View>
+                      <Text style={styles.amountUsd}>
+                        {formatUsd(g.totalUsdValue)}
                       </Text>
-                      <Text style={styles.transferSymbol}>{t.symbol}</Text>
                     </View>
-                    <Text style={styles.amountUsd}>
-                      {formatUsd(t.usdValue)}
-                    </Text>
-                  </View>
-                ))}
+                  );
+                })}
               </View>
             </>
           ) : (

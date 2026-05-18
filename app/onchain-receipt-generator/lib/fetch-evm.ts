@@ -9,6 +9,8 @@ import {
 } from "viem";
 import { mainnet, base, bsc } from "viem/chains";
 import { CHAINS, type Chain, type Receipt, type TokenTransfer } from "../types";
+import { lookupKnownToken } from "./known-tokens";
+import { fetchTokenMetaFromApis } from "./fetch-token-meta";
 
 // ERC-20 Transfer event signature: Transfer(address indexed from, address indexed to, uint256 value)
 const ERC20_TRANSFER_TOPIC =
@@ -51,29 +53,59 @@ async function getTokenMeta(
   client: ReturnType<typeof getClient>,
   address: `0x${string}`,
 ): Promise<{ symbol: string; decimals: number }> {
-  const cacheKey = `${client.chain?.id}-${address.toLowerCase()}`;
+  const chainId = client.chain?.id;
+  const cacheKey = `${chainId}-${address.toLowerCase()}`;
   const cached = tokenMetaCache.get(cacheKey);
   if (cached) return cached;
 
+  // 1. Known tokens — instant, no API call
+  const chainSlug = chainIdToSlug(chainId);
+  if (chainSlug) {
+    const known = lookupKnownToken(chainSlug, address);
+    if (known) {
+      const meta = { symbol: known.symbol, decimals: known.decimals };
+      tokenMetaCache.set(cacheKey, meta);
+      return meta;
+    }
+  }
+
+  // 2. On-chain readContract — most authoritative source for symbol/decimals
   try {
     const [symbol, decimals] = await Promise.all([
-      client.readContract({
-        address,
-        abi: erc20Abi,
-        functionName: "symbol",
-      }),
-      client.readContract({
-        address,
-        abi: erc20Abi,
-        functionName: "decimals",
-      }),
+      client.readContract({ address, abi: erc20Abi, functionName: "symbol" }),
+      client.readContract({ address, abi: erc20Abi, functionName: "decimals" }),
     ]);
     const meta = { symbol: symbol as string, decimals: Number(decimals) };
     tokenMetaCache.set(cacheKey, meta);
     return meta;
   } catch {
-    return { symbol: "???", decimals: 18 };
+    /* fall through to API fallback */
   }
+
+  // 3. DexScreener/GeckoTerminal fallback — for contracts that don't expose symbol()
+  if (chainSlug) {
+    const apiMeta = await fetchTokenMetaFromApis(chainSlug, address);
+    if (apiMeta) {
+      const meta = { symbol: apiMeta.symbol, decimals: apiMeta.decimals };
+      tokenMetaCache.set(cacheKey, meta);
+      return meta;
+    }
+  }
+
+  // 4. Final fallback
+  const fallback = { symbol: "???", decimals: 18 };
+  tokenMetaCache.set(cacheKey, fallback);
+  return fallback;
+}
+
+// Helper to map viem chain.id back to our Chain slug
+function chainIdToSlug(
+  chainId: number | undefined,
+): "ethereum" | "base" | "bsc" | null {
+  if (chainId === 1) return "ethereum";
+  if (chainId === 8453) return "base";
+  if (chainId === 56) return "bsc";
+  return null;
 }
 
 /**

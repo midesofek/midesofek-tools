@@ -82,4 +82,21 @@ export type Receipt = {
     methodName?: string;
   };
   explorerUrl: string; // full URL to the tx on its native explorer
+  /** Pre-computed grouping for compact rendering. */
+  groupedTransfers?: GroupedTransfer[];
+};
+
+export type GroupedTransfer = {
+  token: {
+    symbol: string;
+    address: string;
+  };
+  totalAmount: string;
+  totalUsdValue?: number;
+  recipientCount: number;
+  senderCount: number;
+  /** Direction of the aggregate: one sender → many recipients, or many → one */
+  direction: "one-to-many" | "many-to-one" | "many-to-many" | "single";
+  /** Original individual transfers, in case the UI wants to expand. */
+  transfers: TokenTransfer[];
 };

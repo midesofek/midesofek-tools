@@ -1,5 +1,6 @@
-import type { Receipt, Chain } from "../types";
+import type { Receipt, Chain, GroupedTransfer, TokenTransfer } from "../types";
 import { CHAINS } from "../types";
+import { lookupKnownToken } from "./known-tokens";
 
 const COINGECKO_BASE = "https://api.coingecko.com/api/v3";
 const GECKOTERMINAL_BASE = "https://api.geckoterminal.com/api/v2";
@@ -159,16 +160,80 @@ async function fetchTokenPrice(
   const cacheKey = `token-${chain}-${tokenAddress.toLowerCase()}-${dateStr}`;
   if (priceCache.has(cacheKey)) return priceCache.get(cacheKey)!;
 
-  // Try CoinGecko first (better data quality for listed tokens)
+  // 1. Known tokens with stable peg — zero API, perfect reliability
+  const known = lookupKnownToken(chain, tokenAddress);
+  if (known?.stablePrice !== undefined) {
+    priceCache.set(cacheKey, known.stablePrice);
+    return known.stablePrice;
+  }
+
+  // 2. Native wrapper (WETH, WSOL, WBNB) — price as the native coin
+  if (known?.isNativeWrapper) {
+    const chainInfo = CHAINS[chain];
+    const nativePrice = await fetchNativePrice(chainInfo.coingeckoId, date);
+    priceCache.set(cacheKey, nativePrice);
+    return nativePrice;
+  }
+
+  // 3. CoinGecko (listed tokens, accurate historical)
   let price = await fetchTokenPriceCoinGecko(chain, tokenAddress, date);
 
-  // Fall back to GeckoTerminal for DEX-only tokens
+  // 4. GeckoTerminal (DEX-only tokens)
   if (price === null) {
     price = await fetchTokenPriceGeckoTerminal(chain, tokenAddress, date);
   }
 
   priceCache.set(cacheKey, price);
   return price;
+}
+
+function groupTransfers(transfers: TokenTransfer[]): GroupedTransfer[] {
+  if (transfers.length === 0) return [];
+
+  const byToken = new Map<string, TokenTransfer[]>();
+  for (const t of transfers) {
+    const key = t.tokenAddress.toLowerCase();
+    const list = byToken.get(key) ?? [];
+    list.push(t);
+    byToken.set(key, list);
+  }
+
+  const groups: GroupedTransfer[] = [];
+
+  for (const [, list] of byToken) {
+    const senders = new Set(list.map((t) => t.from.toLowerCase()));
+    const recipients = new Set(list.map((t) => t.to.toLowerCase()));
+
+    const totalAmount = list
+      .reduce((sum, t) => sum + parseFloat(t.amount), 0)
+      .toString();
+
+    const totalUsd = list.some((t) => t.usdValue !== undefined)
+      ? list.reduce((sum, t) => sum + (t.usdValue ?? 0), 0)
+      : undefined;
+
+    const direction: GroupedTransfer["direction"] =
+      list.length === 1
+        ? "single"
+        : senders.size === 1 && recipients.size > 1
+          ? "one-to-many"
+          : senders.size > 1 && recipients.size === 1
+            ? "many-to-one"
+            : "many-to-many";
+
+    groups.push({
+      token: { symbol: list[0]!.symbol, address: list[0]!.tokenAddress },
+      totalAmount,
+      totalUsdValue: totalUsd,
+      recipientCount: recipients.size,
+      senderCount: senders.size,
+      direction,
+      transfers: list,
+    });
+  }
+
+  groups.sort((a, b) => (b.totalUsdValue ?? 0) - (a.totalUsdValue ?? 0));
+  return groups;
 }
 
 /**
@@ -188,6 +253,14 @@ export async function enrichReceiptWithPrices(
     ),
   );
 
+  const enrichedTokenTransfers = receipt.tokenTransfers.map((t, i) => ({
+    ...t,
+    usdValue:
+      tokenPrices[i] !== null
+        ? parseFloat(t.amount) * tokenPrices[i]!
+        : undefined,
+  }));
+
   return {
     ...receipt,
     value: {
@@ -204,12 +277,7 @@ export async function enrichReceiptWithPrices(
           ? parseFloat(receipt.fee.amount) * nativePrice
           : undefined,
     },
-    tokenTransfers: receipt.tokenTransfers.map((t, i) => ({
-      ...t,
-      usdValue:
-        tokenPrices[i] !== null
-          ? parseFloat(t.amount) * tokenPrices[i]!
-          : undefined,
-    })),
+    tokenTransfers: enrichedTokenTransfers,
+    groupedTransfers: groupTransfers(enrichedTokenTransfers),
   };
 }

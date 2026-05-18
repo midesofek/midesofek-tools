@@ -45,21 +45,34 @@ export async function GET(req: NextRequest) {
   const showTokens = !showNative && receipt.tokenTransfers.length > 0;
 
   // Pick the single most important number to feature huge
+  // Pick the dominant grouped transfer (sorted by USD value descending in the enrichment step)
+  const topGroup = receipt.groupedTransfers?.[0];
+
   const headlineAmount = showNative
     ? formatAmount(receipt.value.amount)
-    : showTokens
-      ? formatAmount(receipt.tokenTransfers[0].amount)
+    : showTokens && topGroup
+      ? formatAmount(topGroup.totalAmount)
       : "—";
   const headlineSymbol = showNative
     ? receipt.value.symbol
-    : showTokens
-      ? receipt.tokenTransfers[0].symbol
+    : showTokens && topGroup
+      ? topGroup.token.symbol
       : "";
   const headlineUsd = showNative
     ? receipt.value.usdValue
-    : showTokens
-      ? receipt.tokenTransfers[0].usdValue
+    : showTokens && topGroup
+      ? topGroup.totalUsdValue
       : undefined;
+
+  // Direction label for the headline (only shown for grouped multi-recipient transfers)
+  const headlineDirectionLabel =
+    topGroup && topGroup.transfers.length > 1
+      ? topGroup.direction === "one-to-many"
+        ? `to ${topGroup.recipientCount} recipients`
+        : topGroup.direction === "many-to-one"
+          ? `from ${topGroup.senderCount} senders`
+          : `across ${topGroup.transfers.length} transfers`
+      : null;
 
   return new ImageResponse(
     <div
@@ -161,6 +174,18 @@ export async function GET(req: NextRequest) {
         {headlineUsd !== undefined && (
           <div style={{ fontSize: "32px", opacity: 0.5, display: "flex" }}>
             {formatUsd(headlineUsd)} at time of tx
+          </div>
+        )}
+        {headlineDirectionLabel && (
+          <div
+            style={{
+              fontSize: "28px",
+              opacity: 0.6,
+              display: "flex",
+              marginTop: "-8px",
+            }}
+          >
+            {headlineDirectionLabel}
           </div>
         )}
 

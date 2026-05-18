@@ -1,4 +1,4 @@
-import type { Receipt as ReceiptType } from "../types";
+import type { Receipt as ReceiptType, GroupedTransfer } from "../types";
 import { ChainBadge } from "./ChainBadge";
 import { formatUsd, formatAmount, formatTimestamp } from "../lib/format";
 
@@ -49,29 +49,14 @@ export function Receipt({ receipt }: ReceiptProps) {
               </div>
             )}
           </>
-        ) : receipt.tokenTransfers.length > 0 ? (
+        ) : receipt.groupedTransfers && receipt.groupedTransfers.length > 0 ? (
           <>
             <div className="text-sm text-gray-500 dark:text-gray-400 mb-3">
               Token transfers
             </div>
             <ul className="space-y-3">
-              {receipt.tokenTransfers.map((t, i) => (
-                <li
-                  key={i}
-                  className="flex items-baseline justify-between gap-4"
-                >
-                  <div className="flex items-baseline gap-2 min-w-0">
-                    <span className="text-xl font-semibold tabular-nums truncate">
-                      {formatAmount(t.amount)}
-                    </span>
-                    <span className="text-sm text-gray-500 dark:text-gray-400">
-                      {t.symbol}
-                    </span>
-                  </div>
-                  <span className="text-sm text-gray-500 dark:text-gray-400 tabular-nums whitespace-nowrap">
-                    {formatUsd(t.usdValue)}
-                  </span>
-                </li>
+              {receipt.groupedTransfers.map((g, i) => (
+                <GroupedTransferRow key={i} group={g} />
               ))}
             </ul>
           </>
@@ -171,5 +156,59 @@ function Address({ value, small }: { value: string; small?: boolean }) {
     >
       {value}
     </span>
+  );
+}
+
+function GroupedTransferRow({ group }: { group: GroupedTransfer }) {
+  const isExpanded = group.transfers.length <= 3;
+
+  if (isExpanded) {
+    // Render each transfer individually — small enough to fit
+    return (
+      <>
+        {group.transfers.map((t, i) => (
+          <li key={i} className="flex items-baseline justify-between gap-4">
+            <div className="flex items-baseline gap-2 min-w-0">
+              <span className="text-xl font-semibold tabular-nums truncate">
+                {formatAmount(t.amount)}
+              </span>
+              <span className="text-sm text-gray-500 dark:text-gray-400">
+                {t.symbol}
+              </span>
+            </div>
+            <span className="text-sm text-gray-500 dark:text-gray-400 tabular-nums whitespace-nowrap">
+              {formatUsd(t.usdValue)}
+            </span>
+          </li>
+        ))}
+      </>
+    );
+  }
+
+  // Collapsed: show aggregate
+  const directionLabel =
+    group.direction === "one-to-many"
+      ? `to ${group.recipientCount} recipients`
+      : group.direction === "many-to-one"
+        ? `from ${group.senderCount} senders`
+        : `across ${group.transfers.length} transfers`;
+
+  return (
+    <li className="flex items-baseline justify-between gap-4">
+      <div className="flex items-baseline gap-2 min-w-0">
+        <span className="text-xl font-semibold tabular-nums truncate">
+          {formatAmount(group.totalAmount)}
+        </span>
+        <span className="text-sm text-gray-500 dark:text-gray-400">
+          {group.token.symbol}
+        </span>
+        <span className="text-xs text-gray-400 dark:text-gray-500 ml-1">
+          {directionLabel}
+        </span>
+      </div>
+      <span className="text-sm text-gray-500 dark:text-gray-400 tabular-nums whitespace-nowrap">
+        {formatUsd(group.totalUsdValue)}
+      </span>
+    </li>
   );
 }
