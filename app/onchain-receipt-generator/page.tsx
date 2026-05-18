@@ -4,6 +4,8 @@ import { ToolPageLayout } from "@/components/tool-page/ToolPageLayout";
 import { generateToolMetadata } from "@/lib/seo";
 import { ReceiptForm } from "./components/ReceiptForm";
 import { Suspense } from "react";
+import { FAQSection } from "@/components/tool-page/FAQSection";
+import { onchainReceiptGeneratorContent } from "@/content/tools/onchain-receipt-generator";
 
 const SLUG = "onchain-receipt-generator";
 
@@ -18,6 +20,7 @@ export default function OnchainReceiptGeneratorPage() {
       <Suspense fallback={<ReceiptFormSkeleton />}>
         <ReceiptForm />
       </Suspense>
+      <FAQSection faqs={onchainReceiptGeneratorContent.faqs} />
     </ToolPageLayout>
   );
 }

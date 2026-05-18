@@ -18,7 +18,7 @@ export function FAQSection({ faqs }: { faqs: ToolContent["faqs"] }) {
   return (
     <section className="py-16 border-t border-gray-200 dark:border-gray-800">
       <h2 className="text-2xl font-semibold mb-8">
-        Frequently asked questions
+        Frequently Asked Questions
       </h2>
       <div className="space-y-6 max-w-3xl">
         {faqs.map((faq) => (
