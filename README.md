@@ -8,7 +8,7 @@
 
 **Live at [tools.midesofek.com](https://tools.midesofek.com)**
 
-![QR Code Generator Demo](./docs/demo.gif)
+![QR Code Generator Demo](./docs/demov1.png)
 
 ---
 
@@ -20,13 +20,15 @@ This is a single Next.js app — each tool lives at its own route (e.g. `/qr-cod
 
 ## Tools
 
-|     | Tool                                                               | Status         |
-| --- | ------------------------------------------------------------------ | -------------- |
-| 🔗  | [QR Code Generator](https://tools.midesofek.com/qr-code-generator) | ✅ Live        |
-| ⛽  | Gas Fee Tracker                                                    | 🚧 Coming soon |
-| 🔗  | URL Shortener                                                      | 🚧 Coming soon |
-| 🧾  | Onchain Receipt Generator                                          | 🚧 Coming soon |
-| 🐳  | Solana Token Bundlers                                              | 🚧 Coming soon |
+|     | Tool                                                                               | Status         |
+| --- | ---------------------------------------------------------------------------------- | -------------- |
+| 🔗  | [QR Code Generator](https://tools.midesofek.com/qr-code-generator)                 | ✅ Live        |
+| 🧾  | [Onchain Receipt Generator](https://tools.midesofek.com/onchain-receipt-generator) | ✅ Live        |
+| 📄  | Crypto Invoice Generator                                                           | 🚧 Coming soon |
+| ䷢  | EIP-7702 Authorization Decoder                                                     | 🚧 Coming soon |
+| ⛽  | Gas Fee Tracker                                                                    | 🚧 Coming soon |
+| 🔗  | URL Shortener                                                                      | 🚧 Coming soon |
+| 🐳  | Solana Token Bundlers                                                              | 🚧 Coming soon |
 
 ## Tech stack
 
