@@ -7,7 +7,7 @@ type ReceiptProps = {
 };
 
 export function Receipt({ receipt }: ReceiptProps) {
-  const isFailed = receipt.status === "failed";
+  // const isFailed = receipt.status === "failed";
 
   return (
     <article className="bg-white dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-2xl overflow-hidden">
