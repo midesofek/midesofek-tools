@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "description": "Hand-curated delegate classifications. Add entries via PR with a citation in the 'source' field. Never touched by the auto-sync workflow. Entries here take precedence over Wintermute entries with the same address (for cases where community research updates a classification)."
+  },
+  "entries": []
+}

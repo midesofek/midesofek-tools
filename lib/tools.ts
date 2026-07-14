@@ -60,6 +60,30 @@ export const tools: Tool[] = [
     category: "crypto",
     status: "live",
   },
+  {
+    slug: "eip-7702-decoder",
+    name: "EIP-7702 Delegation Checker",
+    shortDescription:
+      "Is your EOA silently delegated to a smart contract? Paste any Ethereum address and find out — plus flag known phishing/sweeper delegates.",
+    metaDescription:
+      "Free EIP-7702 delegation checker. Paste any Ethereum address to see whether it's currently delegated to a smart contract via EIP-7702, what the delegate is, and whether it's a known-safe wallet implementation or a known phishing/sweeper contract. Runs against public Ethereum RPC. No signup, no wallet connection.",
+    keywords: [
+      "eip 7702 decoder",
+      "eip 7702 checker",
+      "ef0100 delegation lookup",
+      "what is my wallet delegated to",
+      "is my eoa hijacked",
+      "check eip 7702 delegation",
+      "eoa delegation checker",
+      "crimeenjoyor detector",
+      "pectra delegation scanner",
+      "eip 7702 sweeper check",
+    ],
+    icon: "🛡️",
+    category: "crypto",
+    status: "live",
+    launchedAt: "2026-07-14",
+  },
 ];
 
 // Helpers — used throughout the app
