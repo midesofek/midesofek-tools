@@ -22,8 +22,8 @@ export default function Eip7702DecoderPage() {
       <Suspense fallback={<CheckerSkeleton />}>
         <AddressChecker />
       </Suspense>
-      <AboutSection about={eip7702DecoderContent.about} />
-      <FAQSection faqs={eip7702DecoderContent.faqs} />
+      {/* <AboutSection about={eip7702DecoderContent.about} /> */}
+      {/* <FAQSection faqs={eip7702DecoderContent.faqs} /> */}
       <DataSourceFooter />
     </ToolPageLayout>
   );
