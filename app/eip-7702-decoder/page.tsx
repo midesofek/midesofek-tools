@@ -4,9 +4,9 @@ import { ToolPageLayout } from "@/components/tool-page/ToolPageLayout";
 import { generateToolMetadata } from "@/lib/seo";
 import { AddressChecker } from "./components/AddressChecker";
 import { Suspense } from "react";
-import { AboutSection } from "@/components/tool-page/AboutSection";
-import { FAQSection } from "@/components/tool-page/FAQSection";
-import { eip7702DecoderContent } from "@/content/tools/eip-7702-decoder";
+// import { AboutSection } from "@/components/tool-page/AboutSection";
+// import { FAQSection } from "@/components/tool-page/FAQSection";
+// import { eip7702DecoderContent } from "@/content/tools/eip-7702-decoder";
 import { SYNC_META } from "./lib/known-delegates";
 
 const SLUG = "eip-7702-decoder";
