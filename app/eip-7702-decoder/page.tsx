@@ -30,10 +30,6 @@ export default function Eip7702DecoderPage() {
 }
 
 function DataSourceFooter() {
-  const syncedAt = SYNC_META.syncedAt
-    ? new Date(SYNC_META.syncedAt).toUTCString()
-    : "pending first sync";
-
   return (
     <section className="mt-16 pt-8 border-t border-gray-200 dark:border-gray-800 text-sm text-gray-500 dark:text-gray-400">
       <h3 className="font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -47,23 +43,9 @@ function DataSourceFooter() {
           rel="noopener noreferrer"
           className="underline hover:text-gray-700 dark:hover:text-gray-200"
         >
-          {SYNC_META.source}
+          {SYNC_META.source}.
         </a>
-        &apos;s hand-curated categorization table on Dune Analytics (query{" "}
-        <a
-          href="https://dune.com/queries/5145294"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="underline hover:text-gray-700 dark:hover:text-gray-200"
-        >
-          5145294
-        </a>
-        ). We sync nightly via GitHub Actions and treat their tags as flags,
-        not verdicts. This tool currently knows about{" "}
-        <span className="font-mono">{SYNC_META.entryCount}</span> delegate
-        contracts.
       </p>
-      <p className="mt-2 text-xs">Last synced: {syncedAt}</p>
     </section>
   );
 }
