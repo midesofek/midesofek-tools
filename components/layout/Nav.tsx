@@ -1,11 +1,12 @@
 import Link from "next/link";
+import { Logo } from "../Logo";
 
 export function Nav() {
   return (
     <nav className="border-b border-gray-200 dark:border-gray-800">
       <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
-        <Link href="/" className="font-semibold">
-          midesofek-tools
+        <Link href="/">
+          <Logo />
         </Link>
         <div className="flex items-center gap-6 text-sm">
           <Link
