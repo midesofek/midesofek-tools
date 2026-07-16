@@ -1,5 +1,9 @@
+import { differenceInDays } from "date-fns";
+
 export type ToolCategory = "utility" | "crypto" | "developer" | "design";
 export type ToolStatus = "live" | "beta" | "coming-soon";
+
+export const NEW_BADGE_DAYS = 30;
 
 export type Tool = {
   slug: string; // URL slug, this must match folder name in app/
@@ -8,6 +12,7 @@ export type Tool = {
   metaDescription: string; // for <meta name="description">
   keywords: string[]; // for SEO
   icon: string; // emoji for now
+  code: string; // 2-char mono monogram for the homepage tile
   category: ToolCategory;
   status: ToolStatus;
   launchedAt?: string; // ISO date for "newest first" sorting
@@ -34,6 +39,7 @@ export const tools: Tool[] = [
       "crypto qr code generator",
     ],
     icon: "🔗",
+    code: "QR",
     category: "utility",
     status: "live",
   },
@@ -57,6 +63,7 @@ export const tools: Tool[] = [
       "share crypto transaction",
     ],
     icon: "🧾",
+    code: "RC",
     category: "crypto",
     status: "live",
   },
@@ -80,6 +87,7 @@ export const tools: Tool[] = [
       "eip 7702 sweeper check",
     ],
     icon: "🛡️",
+    code: "77",
     category: "crypto",
     status: "live",
     launchedAt: "2026-07-14",
@@ -95,3 +103,7 @@ export const getOtherTools = (slug: string, count = 3): Tool[] =>
 
 export const getLiveTools = (): Tool[] =>
   tools.filter((t) => t.status === "live");
+
+export const isNewTool = (tool: Tool): boolean =>
+  tool.launchedAt !== undefined &&
+  differenceInDays(new Date(), new Date(tool.launchedAt)) <= NEW_BADGE_DAYS;
