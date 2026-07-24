@@ -92,6 +92,26 @@ export const tools: Tool[] = [
     status: "live",
     launchedAt: "2026-07-14",
   },
+  {
+    slug: "ethereum-signature-verifier",
+    name: "Ethereum Signature Verifier",
+    shortDescription:
+      "Verify a signature against an address across all five mechanisms — EOA, ERC-1271, EIP-6492, EIP-7702, and Safe. When it fails, see exactly why.",
+    metaDescription:
+      "Free Ethereum signature verifier. Verify a signature against an address across all five verification mechanisms — plain EOA (ecrecover), ERC-1271 smart contract wallets, EIP-6492 pre-deploy signatures, EIP-7702 delegated EOAs, and Safe multisigs. When verification fails, see the full trace — which digest was expected, which address was recovered, and why the check was rejected. No signup, runs against public RPC.",
+    keywords: [
+      "verify ethereum signature",
+      "eip-6492 verifier",
+      "erc-1271 signature checker",
+      "smart wallet signature verify",
+      "verify safe signature",
+      "eip-7702 signature",
+    ],
+    icon: "✍️",
+    code: "SV",
+    category: "crypto",
+    status: "coming-soon",
+  },
 ];
 
 // Helpers — used throughout the app
