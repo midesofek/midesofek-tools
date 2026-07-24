@@ -48,6 +48,7 @@ interface InputPanelProps {
   onMessageChange: (value: string) => void;
   messageMode: MessageMode;
   onMessageModeChange: (mode: MessageMode) => void;
+  messageModeSource: "auto" | "manual";
   signature: string;
   onSignatureChange: (value: string) => void;
   chainIds: ChainId[];
@@ -68,6 +69,7 @@ export function InputPanel({
   onMessageChange,
   messageMode,
   onMessageModeChange,
+  messageModeSource,
   signature,
   onSignatureChange,
   chainIds,
@@ -120,7 +122,9 @@ export function InputPanel({
 
       <div className="flex justify-between items-center mb-1.75">
         <label className="text-[13px] font-semibold">Message</label>
-        <span className="font-mono text-[11px] text-faint">auto-detected</span>
+        <span className="font-mono text-[11px] text-faint">
+          {messageModeSource === "auto" ? "auto-detected" : "manual"}
+        </span>
       </div>
       <div className="flex gap-1 p-1 rounded-[10px] border border-border bg-card-hover mb-2.25">
         {(Object.keys(MESSAGE_MODE_LABELS) as MessageMode[]).map((mode) => (

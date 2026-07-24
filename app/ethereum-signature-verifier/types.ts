@@ -1,8 +1,10 @@
 import type { Address, Hex } from "viem";
+import type { DigestOutcome, MessageMode } from "./lib/digest";
+
+export type { MessageMode } from "./lib/digest";
 
 export type VerificationPath = "eoa" | "erc1271" | "erc6492" | "eip7702";
 export type AccountKind = "eoa" | "contract" | "delegated" | "undeployed";
-export type MessageMode = "text" | "typed" | "hash";
 export type ChainId = "ethereum" | "base" | "arbitrum" | "optimism" | "polygon";
 
 export type StepStatus = "ok" | "fail" | "warn" | "pending" | "running";
@@ -94,13 +96,29 @@ export interface DualPathResult {
 }
 
 /**
+ * Phase 2's state: no signature to check yet, just the three hashing recipes
+ * run side by side. `active` is whichever mode is selected (auto-detected or
+ * user-overridden); `findings` mirrors `results[active].findings` so the
+ * Findings row doesn't need to know about the other two recipes.
+ */
+export interface DigestResult {
+  status: "digest";
+  detected: MessageMode;
+  active: MessageMode;
+  results: Record<MessageMode, DigestOutcome>;
+  findings: string[];
+}
+
+/**
  * What the result panel actually renders. `null` is the empty state.
  * `SingleVerificationResult` covers the ordinary one-chain, one-path case;
  * `MultichainResult` and `DualPathResult` are composite views for the
  * fan-out and EIP-7702 dual-check states that don't reduce to one verdict.
+ * `DigestResult` is Phase 2's pre-verification state.
  */
 export type VerificationResult =
   | SingleVerificationResult
   | LoadingResult
   | MultichainResult
-  | DualPathResult;
+  | DualPathResult
+  | DigestResult;

@@ -1,6 +1,7 @@
 import { AddressComparison } from "./components/AddressComparison";
 import { ChainResults } from "./components/ChainResults";
 import { DigestComparison } from "./components/DigestComparison";
+import { DigestPanel } from "./components/DigestPanel";
 import { DualPath } from "./components/DualPath";
 import { Findings } from "./components/Findings";
 import { Trace } from "./components/Trace";
@@ -15,6 +16,7 @@ import {
   XIcon,
 } from "./components/icons";
 import type {
+  DigestResult,
   DualPathResult,
   LoadingResult,
   MultichainResult,
@@ -39,6 +41,7 @@ export function ResultPanel({ result }: { result: VerificationResult | null }) {
       {result?.status === "unknown" && <UnknownBody result={result} />}
       {result?.status === "multichain" && <MultichainBody result={result} />}
       {result?.status === "dual-path" && <DualPathBody result={result} />}
+      {result?.status === "digest" && <DigestBody result={result} />}
     </div>
   );
 }
@@ -54,6 +57,8 @@ function resultMeta(result: VerificationResult | null): string {
       return `${result.chains.length} chains`;
     case "dual-path":
       return "2 paths";
+    case "digest":
+      return "computed locally";
     case "valid":
     case "invalid":
       return result.latencyMs ? `${result.latencyMs} ms` : "";
@@ -190,6 +195,25 @@ function MultichainBody({ result }: { result: MultichainResult }) {
         summary={result.summary}
       />
       <ChainResults chains={result.chains} />
+    </div>
+  );
+}
+
+function DigestBody({ result }: { result: DigestResult }) {
+  const activeOutcome = result.results[result.active];
+  return (
+    <div>
+      <DigestPanel results={result.results} active={result.active} />
+      <Trace
+        steps={[
+          {
+            label: "Hashed",
+            detail: activeOutcome.detail,
+            status: activeOutcome.digest !== null ? "ok" : "fail",
+          },
+        ]}
+      />
+      <Findings findings={result.findings} />
     </div>
   );
 }

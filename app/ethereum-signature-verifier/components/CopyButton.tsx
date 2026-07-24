@@ -12,7 +12,9 @@ interface CopyButtonProps {
 
 export function CopyButton({ value, className, size = "sm" }: CopyButtonProps) {
   const [copied, setCopied] = useState(false);
-  const timeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(
+    undefined,
+  );
 
   function handleCopy() {
     void navigator.clipboard?.writeText(value);
