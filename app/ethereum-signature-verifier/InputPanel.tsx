@@ -51,6 +51,7 @@ interface InputPanelProps {
   messageModeSource: "auto" | "manual";
   signature: string;
   onSignatureChange: (value: string) => void;
+  showChains: boolean;
   chainIds: ChainId[];
   selectedChains: Set<ChainId>;
   onToggleChain: (id: ChainId) => void;
@@ -72,6 +73,7 @@ export function InputPanel({
   messageModeSource,
   signature,
   onSignatureChange,
+  showChains,
   chainIds,
   selectedChains,
   onToggleChain,
@@ -161,33 +163,35 @@ export function InputPanel({
         className="w-full min-h-19.5 rounded-lg border border-border bg-transparent px-3 py-2.75 font-mono text-xs leading-relaxed text-foreground outline-none focus:border-brand break-all mb-5 resize-y"
       />
 
-      <div className="mb-3.5">
-        <div className="flex justify-between items-baseline mb-2.25">
-          <label className="text-[13px] font-semibold">Chains</label>
-          <span className="font-mono text-[11px] text-faint">multiple = parallel fan-out</span>
+      {showChains && (
+        <div className="mb-3.5">
+          <div className="flex justify-between items-baseline mb-2.25">
+            <label className="text-[13px] font-semibold">Chains</label>
+            <span className="font-mono text-[11px] text-faint">multiple = parallel fan-out</span>
+          </div>
+          <div className="flex flex-wrap gap-1.75">
+            {chainIds.map((id) => {
+              const selected = selectedChains.has(id);
+              return (
+                <button
+                  key={id}
+                  type="button"
+                  onClick={() => onToggleChain(id)}
+                  aria-pressed={selected}
+                  className={cn(
+                    "h-7.5 px-3 rounded-lg border font-mono text-xs cursor-pointer transition-colors",
+                    selected
+                      ? "border-brand text-brand bg-brand/12"
+                      : "border-border text-muted-fg bg-transparent hover:text-foreground",
+                  )}
+                >
+                  {CHAIN_LABELS[id]}
+                </button>
+              );
+            })}
+          </div>
         </div>
-        <div className="flex flex-wrap gap-1.75">
-          {chainIds.map((id) => {
-            const selected = selectedChains.has(id);
-            return (
-              <button
-                key={id}
-                type="button"
-                onClick={() => onToggleChain(id)}
-                aria-pressed={selected}
-                className={cn(
-                  "h-7.5 px-3 rounded-lg border font-mono text-xs cursor-pointer transition-colors",
-                  selected
-                    ? "border-brand text-brand bg-brand/12"
-                    : "border-border text-muted-fg bg-transparent hover:text-foreground",
-                )}
-              >
-                {CHAIN_LABELS[id]}
-              </button>
-            );
-          })}
-        </div>
-      </div>
+      )}
 
       <button
         type="button"

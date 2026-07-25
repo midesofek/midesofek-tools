@@ -61,6 +61,8 @@ function resultMeta(result: VerificationResult | null): string {
       return "computed locally";
     case "valid":
     case "invalid":
+      // EOA verification is pure secp256k1 — no network, so no latency to show.
+      if (result.path === "eoa") return "computed locally";
       return result.latencyMs ? `${result.latencyMs} ms` : "";
   }
 }

@@ -59,8 +59,27 @@ export const EOA = {
     "0x1111111111111111111111111111111111111111111111111111111111111111" as Hex,
   address: "0x19E7E376E7C213B7E7e7e46cc70A5dD086DAff2A" as Address,
   message: "Login to CoolApp",
+  digest:
+    "0x52fcdfbc5773d56957bfa4cc3629dd15b117ffebd4f08b327dc18d76d5bc1b32" as Hex,
+
+  /** Canonical signature, v = 27. */
   signature:
     "0xe177f5f353d64286d9fa65952481e7ce98fafb6b36eefa6e8b9dcbf221bd499b6afd15405e7b69c9afce45f53c6105d33dbae1cf912ed9d1b5beeb3f777c70001b" as Hex,
+
+  /** Same r/s, v = 0 (raw recovery id). Must normalize to the canonical sig. */
+  signatureRecId:
+    "0xe177f5f353d64286d9fa65952481e7ce98fafb6b36eefa6e8b9dcbf221bd499b6afd15405e7b69c9afce45f53c6105d33dbae1cf912ed9d1b5beeb3f777c700000" as Hex,
+
+  /** Same r/s, v = 31 (eth_sign / Ledger / Safe convention). viem throws on this raw. */
+  signatureEthSign:
+    "0xe177f5f353d64286d9fa65952481e7ce98fafb6b36eefa6e8b9dcbf221bd499b6afd15405e7b69c9afce45f53c6105d33dbae1cf912ed9d1b5beeb3f777c70001f" as Hex,
+
+  /** Malleable twin: s = N − s, v flipped. Verifies to the same signer, but high-s. */
+  signatureHighS:
+    "0xe177f5f353d64286d9fa65952481e7ce98fafb6b36eefa6e8b9dcbf221bd499b9502eabfa18496365031ba0ac39efa2b7cf3fb171e19c66a0a13734d58b9d1411c" as Hex,
+
+  /** A different address, for the recovered-≠-claimed case. */
+  otherAddress: "0x1563915e194D8CfBA1943570603F7606A3115508" as Address,
 } as const;
 
 /**
