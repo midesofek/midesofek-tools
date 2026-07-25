@@ -107,10 +107,11 @@ export const tools: Tool[] = [
       "verify safe signature",
       "eip-7702 signature",
     ],
-    icon: "✍️",
+    icon: "🔐",
     code: "SV",
     category: "crypto",
-    status: "coming-soon",
+    status: "live",
+    launchedAt: "2026-07-25",
   },
 ];
 
